@@ -1,0 +1,35 @@
+
+test 命令测试
+
+-常见的测试类型
+–测试文件状态
+–字符串比较
+–整数值比较
+–逻辑测试
+&& 如果是“前面”（真），则“后面”
+[ -f /var/run/dhcpd.pid ] && rm /var/run/dhcpd.pid 检查 文件是否存在，如果存在就删掉
+[ -d /media/cdrom ] && echo "yes"
+
+|| 如果不是“前面”（假），则“后面”
+[ -f /usr/sbin/dhcpd ] || exit 0 检验文件是否存在，如果存在就退出
+[ -f /media/cdrom ] || echo "no"
+-------------------------------------------------------------------------
+cat /proc/meminfo #查看额定内存数量，到达额定数量系统才会swap
+-------------------------------------------------------------------------
+
+比较磁盘大小
+DISKSIZE=`df -lh | grep sda2 | awk '{print $4}' | awk -F "G" '{print $1}'`
+[ $DISKSIZE -lt 100 ] && echo ${DISKSIZE}MB
+[root@localhost ~]# BootUsage=`df -hT | grep "/boot" | awk '{print $6}' | cut -d "%" -f 1`
+[root@localhost ~]# echo $BootUsage
+12
+[root@localhost ~]# [ $BootUsage -gt 95 ] && echo "YES"
+-------------------------------------------------------------------------
+[root@localhost ~]# echo $USER
+root
+[root@localhost ~]# [ $USER != "teacher" ] && echo "Not teacher"
+Not teacher
+[root@localhost ~]# [ $USER = "teacher" ] || echo "Not teacher"
+Not teacher
+[root@localhost ~]# [! $USER = "teacher" ] || echo "Not teacher"
+-------------------------------------------------------------------------
