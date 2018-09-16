@@ -1,0 +1,14 @@
+变量[^_^][T_T]
+source .bashrc
+get_ps1()
+{
+if [ "$?" = "0" ]
+then
+#we're on the system console or maybe telnetting in
+export PS1="[^_^] \h \W\\$ "
+else
+#we're not on the console, assume an xterm
+export PS1="[T_T] \h \W\\$ "
+fi
+}
+PROMPT_COMMAND=get_ps1
