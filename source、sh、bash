@@ -1,14 +1,16 @@
 
 source、sh、bash、./ 执行脚本的区别
+
 1、source命令用法：
 　　source FileName
 　　作用:在当前bash环境下读取并执行FileName中的命令。该filename文件可以无"执行权限"
 注：该命令通常用命令“.”来替代。
 如：source .bash_profile
-. .bash_profile两者等效。
+   . .bash_profile两者等效。
 source(或点)命令通常用于重新执行刚修改的初始化文档。
 source命令(从 C Shell 而来)是bash shell的内置命令。
 点命令，就是个点符号，(从Bourne Shell而来)。
+
 2、sh和bash命令用法：
 sh FileName
 bash FileName
@@ -16,8 +18,9 @@ bash FileName
 注：两者在执行文件时的不同，是分别用自己的shell来跑文件。
 sh使用“-n”选项进行shell脚本的语法检查，使用“-x”选项实现shell脚本逐条语句的跟踪，
 可以巧妙地利用shell的内置变量增强“-x”选项的输出信息等。
+
 3、./的命令用法：
-./FileName
+   ./FileName
 作用:打开一个子shell来读取并执行FileName中命令。
 注：运行一个shell脚本时会启动另一个命令解释器.
 每个shell脚本有效地运行在父shell(parent shell)的一个子进程里.
@@ -51,54 +54,67 @@ wait 等待直到子进程运行完毕
 -----------------------------------------------------------------
 linux文件描述符：可以理解为linux跟踪打开文件，而分配的一个数字，这个数字有点类似c语言操作文件时候的句柄，通过句柄就可以实现
 文件的读写 操作。 用户可以自定义文件描述符范围是：3-num,这个最大数字，跟用户的：ulimit –n 定义数字有关系，不能超过最大值。
+
 linux启动后，会默认打开3个文件描述符，分别是：标准输入standard input 0,正确输出standard output 1,错误输出：error output 2
 以后打开文件后。新增文件绑定描述符 可以依次增加。 一条shell命令执行，都会继承父进程的文件描述符。因此，所有运行的shell命令，
 都会有默认3个文件描述符。
 对于任何一条linux 命令执行，它会是这样一个过程：
+
 一个命令执行了：
 先有一个输入：输入可以从键盘，也可以从文件得到
 命令执行完成：成功了，会把成功结果输出到屏幕：standard output默认是屏幕
 命令执行有错误：会把错误也输出到屏幕上面：standard error默认也是指的屏幕
-文 件输入输出由追踪为一个给定的进程所有打开文件的整数句柄来完成。这些数字值就是文件描述符。最为人们所知的文件米描述符是
+
+文件输入输出由追踪为一个给定的进程所有打开文件的整数句柄来完成。这些数字值就是文件描述符。最为人们所知的文件米描述符是
 stdin, stdout 和 stderr，文件描述符的数字分别是0，1和2。这些数字和各自的设备是保留的。一个命令执行前，先会准备好所有输入输
 出，默认分别绑定 （stdin,stdout,stderr)，如果这个时候出现错误，命令将终止，不会执行。命令解析过程，可以参考：Linux Shell 通配
 符、元字符、转义符使用实例介绍
 这些默认的输出，输入都是linux系统内定的，我们在使用过程中，有时候并不希望执行结果输出到屏幕。我想输出到文件或其它设备。这
 个时候我们就需要进行输出重定向了。
+
 linux shell下常用输入输出操作符是：
 1. 标准输入 (stdin) ：代码为 0 ，使用 < 或 << ； /dev/stdin -> /proc/self/fd/0 0代表：/dev/stdin
 2. 标准输出 (stdout)：代码为 1 ，使用 > 或 >> ； /dev/stdout -> /proc/self/fd/1 1代表：/dev/stdout
 3. 标准错误输出(stderr)：代码为 2 ，使用 2> 或 2>> ； /dev/stderr -> /proc/self/fd/2 2代表：/dev/stderr
+
 输出重定向：
 格式：
 command-line1 [1-n] > file或文件操作符或设备
 上面命令意思是：将一条命令执行结果（标准输出，或者错误输出，本来都要打印到屏幕上面的） 重定向其它输出设备（文件，打开文件
 操作符，或打印机等等）1,2分别是标准输出，错误输出。
+
 实例：
 #显示当前目录文件 test.sh test1.sh test1.sh实际不存在
 [chengmo@centos5 shell]$ ls test.sh test1.sh
 ls: test1.sh: 没有这个文件和目录
 test.sh
+
 #正确输出与错误输出都显示在屏幕了，现在需要把正确输出写入suc.txt
 # 1>可以省略，不写，默认所至标准输出
+
 [chengmo@centos5 shell]$ ls test.sh test1.sh 1>suc.txt
 ls: test1.sh: 没有这个文件和目录
 [chengmo@centos5 shell]$ cat suc.txt
 test.sh
+
 #把错误输出，不输出到屏幕，输出到err.txt
 [chengmo@centos5 shell]$ ls test.sh test1.sh 1>suc.txt 2>err.txt
 [chengmo@centos5 shell]$ cat suc.txt err.txt
 test.sh
 ls: test1.sh: 没有这个文件和目录
+
 #继续追加把输出写入suc.txt err.txt “>>”追加操作符
 [chengmo@centos5 shell]$ ls test.sh test1.sh 1>>suc.txt 2>>err.txt
+
 #将错误输出信息关闭掉
 [chengmo@centos5 shell]$ ls test.sh test1.sh 2>&-
 test.sh
 [chengmo@centos5 shell]$ ls test.sh test1.sh 2>/dev/null
 test.sh
+
 #&[n] 代表是已经存在的文件描述符，&1 代表输出 &2代表错误输出 &-代表关闭与它绑定的描述符
 #/dev/null 这个设备，是linux 中黑洞设备，什么信息只要输出给这个设备，都会给吃掉
+
 #关闭所有输出
 [chengmo@centos5 shell]$ ls test.sh test1.sh 1>&- 2>&-
 #关闭 1 ，2 文件描述符
@@ -109,6 +125,7 @@ test.sh
 <P>[chengmo@centos5 shell]$ ls test.sh test1.sh &>/dev/null
 #& 代表标准输出 ，错误输出 将所有标准输出与错误输出 输入到/dev/null文件
 </P>
+
 注意：
 1、shell遇到”>”操作符，会判断右边文件是否存在，如果存在就先删除，并且创建新文件。不存在直接创建。 无论左边命令执行是否成
 功。右边文件都会变为空。
@@ -122,6 +139,7 @@ test.sh
 command-line [n] <file或文件描述符&设备
 将然有，命令默认从键盘获得的输入，改成从文件，或者其它打开文件以及设备输入。执行这个命令，将标准输入0，与文件或设备绑
 定。将由它进行输入。
+
 实例：
 [chengmo@centos5 shell]# cat > catfile
 testing
@@ -201,6 +219,7 @@ set/env 查看所有的环境变量
 • $UID 、 $SHELL 、$HOME
 • $PWD、 $PATH
 $PS1、
+
 --------------------------------------------------
 linux中shell变量$#,$@,$0,$1,$2的含义解释:
 变量说明:
