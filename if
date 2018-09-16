@@ -3,8 +3,9 @@ if 单分支
 RATE=`df -hT | grep "/boot" | awk '{print $6}' | cut -d "%" -f1 `
 if [ $RATE -gt 80 ]
 then
-echo "Warning,DISK is full!"
+  echo "Warning,DISK is full!"
 fi
+
 #!/bin/bash
 #
 DIR=/data/cache
@@ -12,10 +13,10 @@ DAY=`date +%Y%m%d%H`
 NUM=`ls $DIR | wc -l`
 DIRNAME=`ls $DIR | grep leveldb`
 if [ $NUM -gt 3 ]
-then
-rm -rf $DIR/$DIRNAME
-echo "-------$DAY--($DIR)-------" >> /tmp/img_cache.log
-echo "$DIRNAME Deleted successful" >> /tmp/img_cache.log
+  then
+    rm -rf $DIR/$DIRNAME
+    echo "-------$DAY--($DIR)-------" >> /tmp/img_cache.log
+    echo "$DIRNAME Deleted successful" >> /tmp/img_cache.log
 fi
 
 -------------------------------------------------------------------------
@@ -23,26 +24,29 @@ if 双分支
 #!/bin/bash
 service httpdstatus &> /dev/null
 if [ $? -eq 0 ]
-then
-echo “httpdservice is running."
-else
-/etc/init.d/httpd restart
+  then
+    echo “httpdservice is running."
+  else
+    /etc/init.d/httpd restart
 fi
+
 #!/bin/bash
 ping -c 3 -i 0.2 -W 3 $1 &> /dev/null
 if [ $? = "0" ]
 then
-echo "Host $1 is up !"
+   echo "Host $1 is up !"
 else
-echo "Host $1 is down !!"
+   echo "Host $1 is down !!"
 fi
+
 #!/bin/bash
 update=`uptime |awk -F " |," '{print $(NF-2)}'`
 if [[ $update > 3 ]];then
-echo "cpu超负荷!"
+  echo "cpu超负荷!"
 else
-echo "cpu正常!"
+  echo "cpu正常!"
 fi
+
 NR - Number of Record - 当前处理的行是第几行（因为awk是流处理工具，一行一行处理的，所以NR在不停的自增1)
 FNR - File Number of Record - 当前处理的行是当前处理文件的第几行
 NF - Number of Fileds - 当前行有多少列数据（这个在每行都会根据设定的分割符重新计算，默认分割符是任意连续的多个空白符）
@@ -53,19 +57,19 @@ if 多分支
 #!/bin/bash
 read -p "Please enter your code: " NUMBER
 if [ $NUMBER -lt 100 ] && [ $NUMBER -ge 90 ]
-then
-echo "Great"
-elif [ $NUMBER -lt 90 ] && [ $NUMBER -ge 80 ]
-then
-echo "Nice"
-elif [ $NUMBER -lt 80 ] && [ $NUMBER -ge 70 ]
-then
-echo "Good"
-elif [ $NUMBER -lt 70 ] && [ $NUMBER -ge 60 ]
-then
-echo "Lucky"
+  then
+    echo "Great"
+  elif [ $NUMBER -lt 90 ] && [ $NUMBER -ge 80 ]
+  then
+    echo "Nice"
+  elif [ $NUMBER -lt 80 ] && [ $NUMBER -ge 70 ]
+  then
+    echo "Good"
+  elif [ $NUMBER -lt 70 ] && [ $NUMBER -ge 60 ]
+  then
+    echo "Lucky"
 else
-echo "Bad"
+    echo "Bad"
 fi
 -------------------------------------------------------------------------
 
