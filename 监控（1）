@@ -1,0 +1,98 @@
+-----------------企业监控------------------------
+主动探测监控（“监控机”主动探测“被监控机”）
+HTTP服务器监控
+#!/bin/sh
+LANG=C
+#被监控服务器、端口列表
+server_all_list=(\
+192.168.1.1:80 \
+192.168.1.2:80 \
+192.168.1.3:80 \
+)
+date=$(date -d "today" +"%Y-%m-%d_%H:%M:%S")
+#采用HTTP POST方式发送检测信息给接口程序interface.php，接口程序负责分析信息，决定是否发送报警MSN消息、手机短信、电子邮
+件。
+send_msg_to_interface()
+{
+/usr/bin/curl -m 600 -d menu=http -d date=$date -d ip=$server_ip -d port=$server_port -d status=$status http://127.0.0.1:8888/interface.php
+}
+server_all_len=${#server_all_list[*]}
+i=0
+while [ $i -lt $server_all_len ]
+do
+server_ip=$(echo ${server_all_list[$i]} | awk -F ':' '{print $1}')
+server_port=$(echo ${server_all_list[$i]} | awk -F ':' '{print $2}')
+if curl -m 10 -G http://${server_all_list[$i]}/ > /dev/null 2>&1
+then
+#status: 0,http down 1,http ok 2,http down but ping ok
+status=1
+echo "服务器${server_ip}，端口${server_port}能够正常访问！"
+else
+if curl -m 30 -G http://${server_all_list[$i]}/ > /dev/null 2>&1
+then
+status=1
+echo "服务器${server_ip}，端口${server_port}能够正常访问！"
+else
+if ping -c 1 $server_ip > /dev/null 2>&1
+then
+status=2
+echo "服务器${server_ip}，端口${server_port}无法访问，但是能够Ping通！"
+else
+status=0
+echo "服务器${server_ip}，端口${server_port}无法访问，并且无法Ping通！"
+fi
+fi
+fi
+send_msg_to_interface
+let i++
+done
+
+
+-----------------企业监控------------------------
+一、前期准备
+1. # service sendmail start 用于发送邮件
+2. # service crond start 用于定时任务
+3. # chkconfig sendmail on
+4. # chkconfig crond on
+二、配置飞信
+1、下载下来的飞信应该是如下结构
+# ls /usr/local/fetion/
+done libACE_SSL-5.7.2.so libssl.so.4
+cache fetion libcrypto.so.4 logs
+commands libACE-5.7.2.so libeay32.dll plugins
+2、需要把libACE-5.7.2.so、libcrypto.so.4、libssl.so.4、libACE_SSL-5.7.2.so 复制到/usr/lib目录中，给fetion添加执行权限，飞信才可以正常
+运行
+1. # cp libACE-5.7.2.so libcrypto.so.4 libssl.so.4 libACE_SSL-5.7.2.so /usr/lib
+2. # chmod +x fetion
+3、发送飞信的脚本
+1. # /usr/local/fetion/fetion --mobile=1356440xxxx --pwd 123456 --to=1885151xxxx --msg-utf8="hi"
+1） mobile后面是发送手机号；
+2） pwd后面是飞信密码
+3） to后面是接收短信的号码
+注：mobile后的手机号必须开通飞信服务，并且to后的手机号必须是mobile的飞信好友
+三、脚本监控
+1. #!/bin/bash
+2.
+3. #网站url地址
+4. for URL in http://www.abc.com http://www.88888.cn
+5.
+6. do
+7. #获取http响应代码
+8. HTTP_CODE=`curl -o /dev/null -s -w "%{http_code}" "${URL}"`
+9.
+10. #服务器能正常响应，应该返回200的代码
+11. if [ $HTTP_CODE = 200 ]
+12. then
+13. echo "$URL is OK" | /bin/mail -s "Http Check" qq@163.com
+14. # else
+15. # /usr/local/fetion/fetion --mobile=1356440xxxx --pwd 123456 --to=1885151xxxx --msg-utf8="$URL is ERROR; error code is $HTTP_CO
+DE"
+16.
+17. fi
+18.
+19. done
+此脚本监控了2个网站www.abc.com与www.88888.cn
+使用了for循环
+通过取网站正常时的返回值，为200 来匹配
+如果正常就发送“相应网站 is OK" 到指定邮箱
+如果失败就直接发送短信到1885151xxxx
