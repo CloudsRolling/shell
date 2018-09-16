@@ -1,0 +1,49 @@
+#!/bin/bash
+
+
+#监控的网页地址
+url="http://dev2.jwsmed.com"
+
+#fastcgi启动/重启/停止脚本路径
+PROG=/data/fistsoft/php/sbin/php-fpm
+
+#fastcgi重启记录日志文件
+LOG=/data/services/logs/php_5525/restart.log
+
+#返回结果正常记录日志
+LOG2=/data/services/logs/php_5525/check.log
+
+#时间
+time=`date`
+
+#取得http状态码
+status=$(curl -H "dev2.jwsmed.com" -m 5 -L -s -w %{http_code} http://127.0.0.1 -o /dev/null)
+
+#如果不是200，就写入日志，然后重新启动
+if [ "$status" != "200" ]; then
+        echo "=============$(date) Return code $status,pgp-fpm  had been restarted===========" >> $LOG
+        $PROG
+else
+#记录正常状态的日志
+        echo "php-fpm  is running ${time} ===========^-^============^-^" >> $LOG2
+fi
+
+*/1 * * * * /bin/bash /usr/local/sbin/php-fpm_check.sh
+
+二
+#!/bin/bash
+#check php-fpm server up/down
+TelLog=/tmp/telphp.log
+while :
+do
+sleep 15;
+/usr/bin/telnet 127.0.0.1 9001 << ! > $TelLog
+quit
+!
+SOK=`cat $TelLog | grep "Escape character" |wc -l`
+if [ $SOK -eq 1 ];then
+  echo "php-fpm is ok"
+else
+  /data/fistsoft/php/sbin/php-fpm &
+fi
+done
