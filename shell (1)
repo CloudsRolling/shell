@@ -1,0 +1,46 @@
+
+查看硬盘的大小脚本
+[root@localhost ~]# vi repboot.sh
+#!/bin/bash
+# To show usage of /boot directory and mode of kernel file.
+echo "Useage of /boot: "
+du -sh /boot
+echo "The mode of kernel file:"
+ls -lh /boot/vmlinuz-*
+[root@localhost ~]# chmod a+x repboot.sh
+逻辑整理：
+#!/bin/bash
+#To show usage of /boot directory and mode of kernel file.
+A=`du -sh /boot | awk '{print $1}'`
+echo "Usage of /boot: " "$A"
+B=`ls -lh /boot/vmlinuz-* | awk -F"/" '{print $3}'`
+echo "The mode of kernel file: " "$B"
+unset A
+unset B
+每周五17:30清理FTP服务器的公共共享目录
+• 检查 /var/ftp/pub/ 目录，将其中所有子目录及文件的详细列表、当时的时间信息追加保存到 /var/log/pubdir.log 日志文件中，然后清空该目
+录
+[root@localhost ~]# vi /opt/ftpclean.sh
+#!/bin/bash
+date >> /var/log/pubdir.log
+ls -lhR /var/ftp/pub >> /var/log/pubdir.log
+rm -rf /var/ftp/pub/*
+[root@localhost ~]# crontab -e
+30 17 * * 5 /opt/ftpclean.sh
+每隔3天对数据库目录做一次完整备份
+• 统计 /var/lib/mysql 目录占用的空间大小、查看当前的日期，并记录到临时文件 /tmp/dbinfo.txt 中
+• 将 /tmp/dbinfo.txt 文件、/var/lib/mysql 目录进行压缩归档，备份到/opt/dbbak/目录中
+• 备份后的包文件名中要包含当天的日期信息
+• 最后删除临时文件/tmp/dbinfo.txt
+[root@localhost ~]# vi /opt/dbbak.sh
+#!/bin/bash
+DAY=`date +%Y%m%d`
+SIZE=`du -sh /var/lib/mysql`
+echo "Date: $DAY" >> /tmp/dbinfo.txt
+echo "Data Size: $Size" >> /tmp/dbinfo.txt
+mkdir /opt/dbbak
+cd /opt/dbbak
+tar zcvf mysqlbak-${DAY}.tar.gz /var/lib/mysql /tmp/dbinfo.txt
+rm -f /tmp/dbinfo.txt
+[root@localhost ~]# crontab -e
+55 23 */3 * * /opt/dbbak.sh
