@@ -17,7 +17,7 @@ LOG2=/home/admin/logs/php/check.log
 time=`date`
 
 #取得http状态码
-status=$(curl -H "dev2.jwsmed.com" -m 5 -L -s -w %{http_code} http://127.0.0.1 -o /dev/null)
+status=$(curl -H "test.abc.com" -m 5 -L -s -w %{http_code} http://127.0.0.1 -o /dev/null)
 
 #如果不是200，就写入日志，然后重新启动
 if [ "$status" != "200" ]; then
