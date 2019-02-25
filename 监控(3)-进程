@@ -15,5 +15,5 @@ if [ $number -eq 0 ]            #如果进程数量为0
 then                            #重新启动服务器，或者扩展其它内容 
 
     /etc/init.d/rabbitmq-server  start
-    sh /usr/local/sbin/restart_mq_server.sh > /dev/null 2>&1
+    sh /home/admin/restart_server.sh > /dev/null 2>&1
 fi
