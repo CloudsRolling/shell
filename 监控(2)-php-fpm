@@ -28,7 +28,7 @@ else
         echo "php-fpm  is running ${time} ===========^-^============^-^" >> $LOG2
 fi
 
-*/1 * * * * /bin/bash /usr/local/sbin/php-fpm_check.sh
+*/1 * * * * /bin/bash /home/admin/php/sbin/php-fpm_check.sh
 
 二
 #!/bin/bash
